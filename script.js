@@ -1,8 +1,9 @@
-
-const text = "The quick brown fox jumps over the lazy dog.";
+let text = "The quick brown fox jumps over the lazy dog."; 
 const textElement = document.getElementById("text");
 const inputElement = document.getElementById("input");
 const resultElement = document.getElementById("result");
+const wpmChart = document.getElementById('wpmChart'); 
+const wpmElement = document.getElementById("wpm"); 
 
 let startTime;
 let endTime;
@@ -25,7 +26,10 @@ const randomTexts = [
   "The majestic eagle soars high above the snowy mountains."
 ];
 const randomIndex = Math.floor(Math.random() * randomTexts.length);
-textElement.textContent = randomTexts[randomIndex];
+text = randomTexts[randomIndex]; 
+
+let wpmData = [];
+let timer;
 
 inputElement.addEventListener("input", (event) => {
   const typedText = event.target.value;
@@ -33,9 +37,15 @@ inputElement.addEventListener("input", (event) => {
 
   if (typedChars === 0) {
     startTime = new Date();
+    timer = setInterval(updateWpm, 300); 
   }
 
   typedChars = correctChars;
+
+  const currentTime = new Date();
+  const timeTaken = currentTime - startTime;
+  const wpm = Math.round((correctChars / 5) / (timeTaken / 60000));
+  wpmElement.textContent = `WPM: ${wpm}`; 
 
   if (typedText === text) {
     endTime = new Date();
@@ -45,6 +55,10 @@ inputElement.addEventListener("input", (event) => {
     resultElement.textContent = `Time: ${timeTaken / 1000} seconds, WPM: ${wpm}`;
     inputElement.style.backgroundColor = 'lightgreen'; 
     inputElement.style.color = 'black'; 
+
+    clearInterval(timer);
+
+    wpmChart.style.display = "block"; 
   } else {
     const incorrectChars = typedText.slice(text.length); 
     inputElement.style.backgroundColor = 'lightpink';
@@ -52,24 +66,56 @@ inputElement.addEventListener("input", (event) => {
     inputElement.setSelectionRange(text.length, typedText.length);
   }
 
-  if (correctChars > currentHighlight) {
-    const highlightSpan = document.createElement("span");
-    highlightSpan.classList.add("highlight");
-    highlightSpan.textContent = text.charAt(currentHighlight);
-    textElement.innerHTML = '';
-    for (let i = 0; i < text.length; i++) {
-      const span = document.createElement('span');
-      if (i < currentHighlight) {
-        span.classList.add('highlight');
-      } else if (i === currentHighlight) {
-        span.classList.add('grayed'); 
-      } else {
-        span.classList.add('incorrect'); 
-      }
-      span.textContent = text.charAt(i);
-      textElement.appendChild(span);
+  textElement.innerHTML = '';
+  for (let i = 0; i < text.length; i++) {
+    const span = document.createElement('span');
+    if (i < currentHighlight) {
+      span.classList.add('highlight');
+    } else if (i === currentHighlight) {
+      span.classList.add('current'); 
+    } else {
+      span.classList.add('incorrect'); 
     }
-    currentHighlight++;
+    span.textContent = text.charAt(i);
+    textElement.appendChild(span);
   }
 
+  currentHighlight++; 
 });
+
+function updateWpmChart() {
+  const ctx = document.getElementById('wpmChart').getContext('2d');
+
+  if (window.myChart) {
+    window.myChart.destroy();
+  }
+
+  window.myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: Array.from({ length: wpmData.length }, (_, i) => i + 1),
+      datasets: [{
+        label: 'WPM',
+        data: wpmData,
+        borderColor: 'lightblue',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
+function updateWpm() {
+  const timeTaken = new Date() - startTime;
+  const wpm = Math.round((typedChars / 5) / (timeTaken / 60000));
+  wpmData.push(wpm);
+  updateWpmChart(); 
+}
+
+wpmChart.style.display = "none";
