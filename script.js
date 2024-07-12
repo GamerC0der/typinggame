@@ -1,14 +1,16 @@
-let text = "The quick brown fox jumps over the lazy dog."; 
+let text = "The quick brown fox jumps over the lazy dog.";
 const textElement = document.getElementById("text");
 const inputElement = document.getElementById("input");
 const resultElement = document.getElementById("result");
-const wpmChart = document.getElementById('wpmChart'); 
-const wpmElement = document.getElementById("wpm"); 
+const wpmChart = document.getElementById('wpmChart');
+const wpmElement = document.getElementById("wpm");
+const accuracyElement = document.getElementById("accuracy");
 
 let startTime;
 let endTime;
-let typedChars = 0;
+let typedChars = 0; 
 let currentHighlight = 0;
+let accuracy = 0; 
 
 const randomTexts = [
   "The quick brown rabbit jumps over the lazy cat.",
@@ -26,61 +28,61 @@ const randomTexts = [
   "The majestic eagle soars high above the snowy mountains."
 ];
 const randomIndex = Math.floor(Math.random() * randomTexts.length);
-text = randomTexts[randomIndex]; 
+text = randomTexts[randomIndex];
 
 let wpmData = [];
 let timer;
 
+let typingStarted = false;
+
 inputElement.addEventListener("input", (event) => {
   const typedText = event.target.value;
-  const correctChars = typedText.length;
+  const correctChars = typedText.length; 
 
-  if (typedChars === 0) {
+  if (!typingStarted) {
     startTime = new Date();
-    timer = setInterval(updateWpm, 300); 
+    timer = setInterval(updateWpm, 300);
+    typingStarted = true; 
   }
-
-  typedChars = correctChars;
 
   const currentTime = new Date();
   const timeTaken = currentTime - startTime;
-  const wpm = Math.round((correctChars / 5) / (timeTaken / 60000));
-  wpmElement.textContent = `WPM: ${wpm}`; 
+  const wpm = Math.round((typedChars / 5) / (timeTaken / 60000));
+  wpmElement.textContent = `WPM: ${wpm}`;
+
+  accuracy = Math.round((typedChars / text.length) * 100);
+  accuracyElement.textContent = `Accuracy: ${accuracy}%`;
 
   if (typedText === text) {
     endTime = new Date();
     const timeTaken = endTime - startTime;
-    const wpm = Math.round((correctChars / 5) / (timeTaken / 60000));
+    const wpm = Math.round((typedChars / 5) / (timeTaken / 60000));
 
-    resultElement.textContent = `Time: ${timeTaken / 1000} seconds, WPM: ${wpm}`;
-    inputElement.style.backgroundColor = 'lightgreen'; 
-    inputElement.style.color = 'black'; 
+    resultElement.textContent = `Time: ${timeTaken / 1000} seconds, WPM: ${wpm}, Accuracy: ${accuracy}%`;
+    inputElement.style.backgroundColor = 'lightgreen';
+    inputElement.style.color = 'black';
 
     clearInterval(timer);
-
-    wpmChart.style.display = "block"; 
-  } else {
-    const incorrectChars = typedText.slice(text.length); 
-    inputElement.style.backgroundColor = 'lightpink';
-    inputElement.style.color = 'black'; 
-    inputElement.setSelectionRange(text.length, typedText.length);
+    wpmChart.style.display = "block";
   }
 
   textElement.innerHTML = '';
   for (let i = 0; i < text.length; i++) {
     const span = document.createElement('span');
-    if (i < currentHighlight) {
-      span.classList.add('highlight');
+    if (i < correctChars) {
+      if (typedText[i] === text[i]) {
+        span.classList.add('highlight'); 
+        typedChars = i + 1; 
+      } else {
+        span.classList.add('incorrect'); 
+      }
     } else if (i === currentHighlight) {
-      span.classList.add('current'); 
-    } else {
-      span.classList.add('incorrect'); 
+      span.classList.add('current');
     }
     span.textContent = text.charAt(i);
     textElement.appendChild(span);
   }
-
-  currentHighlight++; 
+  currentHighlight = typedText.length; 
 });
 
 function updateWpmChart() {
@@ -119,3 +121,5 @@ function updateWpm() {
 }
 
 wpmChart.style.display = "none";
+
+inputElement.style.color = "white";
