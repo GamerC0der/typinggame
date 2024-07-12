@@ -1,3 +1,4 @@
+
 const text = "The quick brown fox jumps over the lazy dog.";
 const textElement = document.getElementById("text");
 const inputElement = document.getElementById("input");

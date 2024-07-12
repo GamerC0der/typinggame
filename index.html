@@ -2,43 +2,70 @@
 <html>
 <head>
   <title>Speed Typing Test</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    html {
+      height: 100%;
+      width: 100%;
+    }
     body {
       font-family: sans-serif;
       text-align: center;
+      background-color: #181818;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
     #text {
       font-size: 24px;
       margin-bottom: 20px;
     }
+
     #input {
       font-size: 20px;
       padding: 10px;
       border: 1px solid #ccc;
       width: 300px;
+      background-color: #343a40; 
     }
+
     #result {
       margin-top: 20px;
       font-size: 18px;
     }
+
     .highlight {
       color: green; 
     }
+
     .grayed {
       color: gray;
     }
+
     .incorrect {
       color: red;
+    }
+    .container {
+        background-color: #212529;
+        color: #fff;
     }
   </style>
 </head>
 <body>
-  <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-4">Speed Typing Test</h1>
-    <p id="text" class="text-lg mb-4"></p>
-    <input type="text" id="input" placeholder="Type here..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300">
-    <div id="result" class="mt-4"></div>
+  
+  <div class="container">
+    <p>Type T to begin</p>
+    
+    <h1 class="title is-1 highlight">Speed Typing Test</h1>
+    <p id="text" class="subtitle"></p>
+    <input type="text" id="input" placeholder="Type here..." class="input is-medium">
+    <div id="result"></div>
+    <canvas id="wpmChart"></canvas>
+    <div id="wpm"></div>
   </div>
 
   <script src="script.js"></script>
